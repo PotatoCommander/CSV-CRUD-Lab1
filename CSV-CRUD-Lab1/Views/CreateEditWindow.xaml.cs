@@ -27,6 +27,7 @@ namespace CSV_CRUD_Lab1.Views
         {
             InitializeComponent();
             EventsInit();
+
             repo = repository;
             CreateEditButton.Content = "Создать";
             isCreateAction = true;
@@ -38,6 +39,7 @@ namespace CSV_CRUD_Lab1.Views
         {
             InitializeComponent();
             EventsInit();
+
             BrandTextBox.Text = car.brand;
             ModelTextBox.Text = car.model;
             PriceTextBox.Text = car.price.ToString(CultureInfo.InvariantCulture);
@@ -60,6 +62,7 @@ namespace CSV_CRUD_Lab1.Views
             YearTextBox.PreviewTextInput += new TextCompositionEventHandler((s, e) => NumberValidationTextBox(s, e, 4));
             numberOfCylindersTextBox.PreviewTextInput += new TextCompositionEventHandler((s, e) => NumberValidationTextBox(s, e, 2));
             numberOfValvesTextBox.PreviewTextInput += new TextCompositionEventHandler((s, e) => NumberValidationTextBox(s, e, 3));
+            volumeTextBox.PreviewTextInput += new TextCompositionEventHandler((s, e) => NumberValidationTextBox(s, e, 3));
         }
 
         private void CreateEditButton_Click(object sender, RoutedEventArgs e)
@@ -67,14 +70,26 @@ namespace CSV_CRUD_Lab1.Views
             
         }
 
-        //private void Create()
-        //{
-        //    repo.AddCar(new Car()
-        //    {
-        //        price = Convert.ToInt32(PriceTextBox.Text);
-        //    });
-        //}
-        private void NumberValidationTextBox(object sender, TextCompositionEventArgs e, int n)
+        private void Create()
+        {
+            repo.AddCar(new Car()
+            {
+                price = Convert.ToInt32(PriceTextBox.Text),
+                condition = (CarsCondition)ConditionComboBox.SelectedItem,
+                bodyType = (BodyTypes)BodyTypeCombobox.SelectedItem,
+                brand = BrandTextBox.Text,
+                model = ModelTextBox.Text,
+                yearOfProduction = Convert.ToInt32(YearTextBox.Text),
+                engine = new Engine()
+                {
+                    numberOfCylinders = Convert.ToByte(numberOfCylindersTextBox.Text),
+                    numberOfValves = Convert.ToByte(numberOfValvesTextBox.Text),
+                    typeOfFuel = TypeOfFuelTextBox.Text,
+                    volumeSm = Convert.ToInt32(volumeTextBox.Text)
+                }
+            });
+        }
+    private void NumberValidationTextBox(object sender, TextCompositionEventArgs e, int n)
         {
             var regex = new Regex(@"^\d+");
             var textBox = sender as TextBox;
