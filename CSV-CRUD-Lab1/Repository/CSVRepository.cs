@@ -13,7 +13,7 @@ namespace CSV_CRUD_Lab1.Repository
 {
     public class CSVRepository : IRepository
     {
-        private const string FILE_PATH = "C:\\Users\\Lenovo\\source\\repos\\CSV-CRUD-Lab1\\CSV-CRUD-Lab1\\List.csv";
+        public string FilePath { get; set; }
 
         private readonly CsvConfiguration _config = new CsvConfiguration()
         {
@@ -21,9 +21,10 @@ namespace CSV_CRUD_Lab1.Repository
             CultureInfo = CultureInfo.InvariantCulture
         };
 
+
         public List<Car> GetCars()
         {
-            using var reader = new StreamReader(FILE_PATH);
+            using var reader = new StreamReader(FilePath);
             using var csv = new CsvReader(reader, _config);
             var list = csv.GetRecords<Car>().ToList();
             return list;
@@ -31,7 +32,7 @@ namespace CSV_CRUD_Lab1.Repository
 
         public void AddCar(Car item)
         {
-            using var stream = File.Open(FILE_PATH, FileMode.Append);
+            using var stream = File.Open(FilePath, FileMode.Append);
             using var writer = new StreamWriter(stream);
             using var csv = new CsvWriter(writer, _config);
             csv.WriteRecord(item);
@@ -42,7 +43,7 @@ namespace CSV_CRUD_Lab1.Repository
             var list = GetCars();
             list[list.FindIndex(x => x.id == item.id)] = item;
 
-            using var writer = new StreamWriter(FILE_PATH);
+            using var writer = new StreamWriter(FilePath);
             using var csvWriter = new CsvWriter(writer, _config);
             csvWriter.WriteRecords(list);
         }
@@ -53,7 +54,7 @@ namespace CSV_CRUD_Lab1.Repository
             var index = list.FindIndex(x => x.id == item.id);
             list.RemoveAt(index);
 
-            using var writer = new StreamWriter(FILE_PATH);
+            using var writer = new StreamWriter(FilePath);
             using var csvWriter = new CsvWriter(writer, _config);
             csvWriter.WriteRecords(list);
         }

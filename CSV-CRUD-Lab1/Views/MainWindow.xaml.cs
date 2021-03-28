@@ -1,11 +1,15 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
+using System.Security.Permissions;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
 using System.Windows.Documents;
 using CSV_CRUD_Lab1.Model;
 using CSV_CRUD_Lab1.Repository;
+using Microsoft.Win32;
+
 namespace CSV_CRUD_Lab1.Views
 {
     /// <summary>
@@ -13,61 +17,67 @@ namespace CSV_CRUD_Lab1.Views
     /// </summary>
     public partial class MainWindow : Window
     {
-        private CSVRepository repo;
+        private CSVRepository _repo;
+
         public MainWindow()
         {
             InitializeComponent();
-            repo = new CSVRepository();
-            CarsGrid.ItemsSource = repo.GetCars();
+            _repo = new CSVRepository();
             CarsGrid.SelectionMode = DataGridSelectionMode.Single;
             CarsGrid.SelectedItem = null;
-        }
-
-
-        private void DisplayButton_Click(object sender, RoutedEventArgs e)
-        {
-            this.Refresh();
+            PathLabelShow();
         }
 
         private void AddButton_Click(object sender, RoutedEventArgs e)
         {
-            var addWindow = new CreateEditWindow(repo);
-            addWindow.RefreshCallbackDelegate += this.Refresh;
+            if (string.IsNullOrEmpty(_repo.FilePath))
+            {
+                MessageBox.Show("Не задан путь");
+                return;
+            }
+
+            var addWindow = new CreateEditWindow(_repo);
+            addWindow.RefreshCallbackDelegate += this.ShowGrid;
             addWindow.Show();
+            DropSelection();
         }
 
         private void ChangeButton_Click(object sender, RoutedEventArgs e)
         {
-            if(!isAnySelected()) return;
+            if (string.IsNullOrEmpty(_repo.FilePath))
+            {
+                MessageBox.Show("Не задан путь");
+                return;
+            }
 
-            var addWindow = new CreateEditWindow(GetCurrent(), repo);
-            addWindow.RefreshCallbackDelegate += this.Refresh;
-            addWindow.GetCurrentCallbackDelegate += this.GetCurrent;
-            addWindow.DropDelegate += this.DropSelection;
+            if (!IsAnySelected()) return;
+            var addWindow = new CreateEditWindow(GetCurrent(), _repo);
+            addWindow.RefreshCallbackDelegate += ShowGrid;
+            addWindow.GetCurrentCallbackDelegate += GetCurrent;
+            addWindow.DropDelegate += DropSelection;
             addWindow.Show();
         }
 
         private void DeleteButton_Click(object sender, RoutedEventArgs e)
         {
-            if (!isAnySelected()) return;
-            repo.DeleteCar(CarsGrid.SelectedItem as Car);
-            this.Refresh();
-        }
-
-        public bool isAnySelected()
-        {
-            if (CarsGrid.SelectedItems.Count == 0)
+            if (string.IsNullOrEmpty(_repo.FilePath))
             {
-                MessageBox.Show("Выберите элемент");
-                return false;
+                MessageBox.Show("Не задан путь");
+                return;
             }
 
-            return true;
+            if (!IsAnySelected()) return;
+            _repo.DeleteCar(CarsGrid.SelectedItem as Car); 
+            ShowGrid();
         }
-        public void Refresh()
+
+        public bool IsAnySelected()
         {
-            CarsGrid.ItemsSource = repo.GetCars();
+            if (CarsGrid.SelectedItems.Count != 0) return true;
+            MessageBox.Show("Выберите элемент");
+            return false;
         }
+
 
         private Car GetCurrent()
         {
@@ -77,6 +87,48 @@ namespace CSV_CRUD_Lab1.Views
         private void DropSelection()
         {
             CarsGrid.SelectedItem = null;
+        }
+
+        private void FileSelectButton_Click(object sender, RoutedEventArgs e)
+        {
+            var fbd = new OpenFileDialog
+            {
+                Filter = "CSV Files (*.csv*)|*.csv*",
+                FilterIndex = 1
+            };
+
+            if (fbd.ShowDialog() != true) return;
+            _repo.FilePath = fbd.FileName;
+            ShowGrid();
+            PathLabelShow(_repo.FilePath);
+        }
+
+        private void PathLabelShow(string path = "УКАЖИТЕ ПУТЬ К ФАЙЛУ")
+        {
+            FilePathLabel.Content = $"Путь к файлу: {path}";
+        }
+
+        private void ShowGrid()
+        {
+            CarsGrid.ItemsSource = _repo.GetCars();
+        }
+
+        private void CreateNewButton_Click(object sender, RoutedEventArgs e)
+        {
+            var fbd = new SaveFileDialog
+            {
+                DefaultExt = "csv", 
+                Filter = "CSV Files (*.csv*)|*.csv*", 
+                FilterIndex = 1
+            };
+
+            if (fbd.ShowDialog() != true) return;
+            _repo.FilePath = fbd.FileName; 
+            var fs = File.Create(fbd.FileName);
+            fs.Close();
+            MessageBox.Show("Файл создан");
+            ShowGrid();
+            PathLabelShow(_repo.FilePath);
         }
     }
 }

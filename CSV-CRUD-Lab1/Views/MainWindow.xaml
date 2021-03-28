@@ -5,17 +5,19 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:CSV_CRUD_Lab1"
         mc:Ignorable="d"
-        Title="MainWindow" Height="600" Width="1000">
-    <Grid Margin="0,0,0,8">
-        <DataGrid x:Name="CarsGrid" Margin="10,30,148,39" IsSynchronizedWithCurrentItem="True" IsReadOnly="True" >
+        Title="MainWindow" Height="661" Width="1000" Background="#FF45464C">
+    <Grid>
+        <DataGrid x:Name="CarsGrid" Margin="10,30,148,86" IsSynchronizedWithCurrentItem="True" IsReadOnly="True" Background="#FFD4E2E7" >
             <DataGrid.CellStyle>
                 <Style/>
             </DataGrid.CellStyle>
         </DataGrid>
         <Button x:Name="DeleteButton" Content="Удалить" HorizontalAlignment="Left" Margin="864,139,0,0" VerticalAlignment="Top" Height="36" Width="106" Click="DeleteButton_Click"/>
-        <Button x:Name="DisplayButton" Content="Отобразить" HorizontalAlignment="Left" Margin="857,407,0,0" VerticalAlignment="Top" Height="29" Width="121" Click="DisplayButton_Click"/>
         <Button x:Name="ChangeButton" Content="Изменить" HorizontalAlignment="Left" Margin="864,82,0,0" VerticalAlignment="Top" Height="36" Width="106" Click="ChangeButton_Click"/>
         <Button x:Name="AddButton" Content="Добавить" HorizontalAlignment="Left" Margin="864,30,0,0" VerticalAlignment="Top" Height="36" Width="106" Click="AddButton_Click"/>
+        <Button x:Name="FileSelectButton" Content="Open File" HorizontalAlignment="Left" Margin="10,562,0,0" VerticalAlignment="Top" Width="126" Click="FileSelectButton_Click"/>
+        <Label x:Name="FilePathLabel" Content="Label" HorizontalAlignment="Left" Margin="298,559,0,0" VerticalAlignment="Top" Background="#FF2C3043" Foreground="White"/>
+        <Button x:Name="CreateNewButton" Content="Create new" HorizontalAlignment="Left" Margin="148,562,0,0" VerticalAlignment="Top" Width="126" Click="CreateNewButton_Click"/>
 
     </Grid>
 </Window>

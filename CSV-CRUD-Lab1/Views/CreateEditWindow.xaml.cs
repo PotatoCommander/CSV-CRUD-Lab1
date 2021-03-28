@@ -14,8 +14,8 @@ namespace CSV_CRUD_Lab1.Views
     /// </summary>
     public partial class CreateEditWindow : Window
     {
-        private bool isCreateAction;
-        private CSVRepository repo;
+        private bool _isCreateAction;
+        private CSVRepository _repo;
 
         public delegate void RefreshGridDelegate();
         public RefreshGridDelegate RefreshCallbackDelegate;
@@ -32,9 +32,9 @@ namespace CSV_CRUD_Lab1.Views
             EventsInit();
             InitEnums();
 
-            repo = repository;
+            _repo = repository;
             CreateEditButton.Content = "Создать";
-            isCreateAction = true;
+            _isCreateAction = true;
 
             ConditionComboBox.SelectedItem = CarsCondition.Good;
             BodyTypeCombobox.SelectedItem = BodyTypes.Wagon;
@@ -46,8 +46,19 @@ namespace CSV_CRUD_Lab1.Views
             EventsInit();
             InitEnums();
 
-            repo = repository;
+            _repo = repository;
+            //textbox init
+            TextBoxEditInit(car);
+            //textbox init
 
+            ConditionComboBox.SelectedItem = car.condition;
+            BodyTypeCombobox.SelectedItem = car.bodyType;
+
+            _isCreateAction = false;
+        }
+
+        private void TextBoxEditInit(Car car)
+        {
             BrandTextBox.Text = car.brand;
             ModelTextBox.Text = car.model;
             PriceTextBox.Text = car.price.ToString(CultureInfo.InvariantCulture);
@@ -57,11 +68,6 @@ namespace CSV_CRUD_Lab1.Views
             numberOfValvesTextBox.Text = car.engine.numberOfValves.ToString();
             volumeTextBox.Text = car.engine.volumeSm.ToString();
             CreateEditButton.Content = "Редактировать";
-
-            ConditionComboBox.SelectedItem = car.condition;
-            BodyTypeCombobox.SelectedItem = car.bodyType;
-
-            isCreateAction = false;
         }
 
         private void EventsInit()
@@ -83,7 +89,7 @@ namespace CSV_CRUD_Lab1.Views
         {
             try
             {
-                if (isCreateAction)
+                if (_isCreateAction)
                 {
                     Create();
                 }
@@ -91,21 +97,20 @@ namespace CSV_CRUD_Lab1.Views
                 {
                     Edit(GetCurrentCallbackDelegate());
                 }
+
                 RefreshCallbackDelegate();
-                DropDelegate();
-                base.Close();
+                DropDelegate?.Invoke();
+                Close();
             }
-            catch (FormatException exception)
+            catch (FormatException)
             {
                 MessageBox.Show("Неверный ввод");
             }
-            
-            
         }
 
         private void Create()
         {
-            repo.AddCar(new Car
+            _repo.AddCar(new Car
                 {
                     price = Convert.ToInt32(PriceTextBox.Text),
                     condition = (CarsCondition) ConditionComboBox.SelectedItem,
@@ -125,7 +130,7 @@ namespace CSV_CRUD_Lab1.Views
 
         private void Edit(Car item)
         {
-            repo.UpdateCar(new Car
+            _repo.UpdateCar(new Car
             {
                 id = item.id,
                 price = Convert.ToInt32(PriceTextBox.Text),
@@ -148,7 +153,7 @@ namespace CSV_CRUD_Lab1.Views
         {
             var regex = new Regex(@"^\d+");
             var textBox = sender as TextBox;
-            if (textBox.Text.Length < n && regex.IsMatch(e.Text))
+            if (textBox != null && textBox.Text.Length < n && regex.IsMatch(e.Text))
             {
                 e.Handled = false;
                 return;

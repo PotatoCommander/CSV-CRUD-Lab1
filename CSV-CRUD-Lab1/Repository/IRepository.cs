@@ -5,7 +5,7 @@ using CSV_CRUD_Lab1.Model;
 
 namespace CSV_CRUD_Lab1.Repository
 {
-    interface IRepository
+    internal interface IRepository
     {
         List<Car> GetCars();
         void AddCar(Car item);
