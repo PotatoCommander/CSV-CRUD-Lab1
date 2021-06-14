@@ -43,5 +43,5 @@ jobs:
         shell: powershell
         run: |
           .\.sonar\scanner\dotnet-sonarscanner begin /k:"PotatoCommander_CSV-CRUD-Lab1" /o:"potatocommander" /d:sonar.login="${{ secrets.SONAR_TOKEN }}" /d:sonar.host.url="https://sonarcloud.io"
-          msbuild  D:\a\CSV-CRUD-Lab1\CSV-CRUD-Lab1\CSV-CRUD-Lab1.sln /t:rebuild
+          dotnet build D:\a\CSV-CRUD-Lab1\CSV-CRUD-Lab1\CSV-CRUD-Lab1.sln
           .\.sonar\scanner\dotnet-sonarscanner end /d:sonar.login="${{ secrets.SONAR_TOKEN }}"
